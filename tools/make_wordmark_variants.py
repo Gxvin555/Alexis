@@ -52,7 +52,8 @@ def main(src):
     xs, ys = [p[0] for p in dot], [p[1] for p in dot]
     dot_box = (min(xs), min(ys), max(xs) + 1, max(ys) + 1)
     # Representative dot colour and letter colour (most saturated / darkest opaque pixels).
-    dot_rgb = max((pix[x, y][:3] for x, y in dot), key=lambda c: saturation(*c))
+    from collections import Counter
+    dot_rgb = Counter(pix[x, y][:3] for x, y in dot if pix[x, y][3] == 255).most_common(1)[0][0]
     greys = [pix[x, y][:3] for y in range(0, h, 2) for x in range(0, w, 2)
              if pix[x, y][3] > 200 and saturation(*pix[x, y][:3]) < 0.1 and max(pix[x, y][:3]) < 200]
     letter_rgb = min(greys, key=sum) if greys else (90, 90, 90)
@@ -73,7 +74,8 @@ def main(src):
                 dp[x, y] = (*LETTER_TARGET, a)
 
     OUT.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(src, OUT / 'alexis-wordmark.png')
+    if src.resolve() != (OUT / 'alexis-wordmark.png').resolve():
+        shutil.copyfile(src, OUT / 'alexis-wordmark.png')
     dark.save(OUT / 'alexis-wordmark-light.png', optimize=True)
 
     # Favicon: the dot itself, centred on a transparent square.

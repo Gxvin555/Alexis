@@ -4,7 +4,8 @@ Alexis is Lucerna's private, offline business finance app for one device. It
 records business income and expenditure, budgets, recurring bills, money the
 business has lent or borrowed, and business documents. Everything is stored in
 this browser and never leaves the machine. Mavis, the built-in assistant,
-answers from those records only; there is no external AI service.
+answers set questions from those records using built-in rules. It is not an AI
+model and connects to no service.
 
 It is a single HTML file with no backend and no build step.
 
@@ -41,7 +42,8 @@ bookmarks.
   CSV columns are Date, Type, Description, Category, Amount, Notes, with dates
   as YYYY-MM-DD.
 - **Calculator**: quick sums and a loan or credit repayment estimate.
-- **Mavis**: answers questions about the records and opens pages and forms.
+- **Mavis**: answers set questions about the records with built-in rules, and
+  opens pages and forms. Not an AI model.
 
 The recorded balance is all recorded income less all recorded expenditure. It
 is not a verified bank balance, and net cash flow is not accounting profit.
@@ -77,30 +79,52 @@ encrypt the records.
 ## Design system
 
 Alexis uses the Lucerna house design system shared with aperture, aether and
-avenir. The only per-app value is the accent: Alexis is amber (`#D99A32`).
-Tokens, components and responsive rules live in one stylesheet in
+avenir. Tokens, components and responsive rules live in one stylesheet in
 `alexis.html`. See `CLAUDE.md` for the rules.
+
+**Accent exception.** The house token table lists peach (`#F2AA84`, the
+wordmark dot) for Alexis. Alexis deliberately keeps a warm amber interface
+(`--brand:#D99A32`) as an app-specific decision, while the wordmark keeps its
+original peach dot untouched. Contrast is split the house way: `--brand` for
+non-text accents and button fills with near-black text, `--brand-strong`
+(`#9d6d1d`) for any fill that carries white text, and `--brand-ink` for amber
+text and links (`#8a5c12` light, `#dea74c` dark). Switching to the peach row is
+a change to the accent block only.
 
 ## Brand assets
 
-`assets/img/` holds the brand artwork:
+`assets/img/` holds the brand artwork; `assets/ASSET_MANIFEST.json` records the
+source, role and SHA-256 of each file.
 
-- `lucerna.png`, `lucerna-light.png`: the Lucerna sub-brand, shown once at the
-  foot of Settings.
-- `alexis-wordmark.png`, `alexis-wordmark-light.png`, `favicon.png`: the Alexis
-  wordmark for light and dark surfaces, and its dot. Generate them from the
-  supplied artwork with:
+- `alexis-wordmark.png`: the supplied `alexis.png`, byte-for-byte.
+- `alexis-wordmark-light.png`: recolour-only copy for dark surfaces. Lettering
+  `#595959` becomes `#e9edf4`; the dot pixels and alpha are unchanged.
+- `favicon.png`: the dot, cropped from the original.
+- `lucerna.png`, `lucerna-light.png`: the Lucerna sub-brand and its
+  recolour-only light copy, shown once at the foot of Settings.
 
-  ```
-  python3 tools/make_wordmark_variants.py "Alexis - Finance.png"
-  ```
+Logos always sit directly on the surface, never inside a box or plaque. Dark
+surfaces use the light-ink copy. To regenerate the light copy and favicon from
+new artwork:
 
-  The tool copies the artwork unchanged, makes the dark-surface copy by
-  recolouring the lettering only, and crops the dot for the favicon. Until the
-  files exist, the app shows the plain name "Alexis" in their place.
+```
+python3 tools/make_wordmark_variants.py path/to/alexis.png
+```
 
-Poppins (SIL Open Font License, `assets/fonts/Poppins-OFL.txt`) is embedded in
-`alexis.html` so the app works offline.
+## Fonts
+
+Fonts are bundled in `alexis.html`; there are no font CDN requests.
+
+- **UI:** Poppins 500, 600 and 700 (SIL Open Font License,
+  `assets/fonts/Poppins-OFL.txt`). Weight ceiling is 700.
+- **Branding (`--font-brand`):** reserved for Biome, the Lucerna branding face
+  by Carl Crossgrove, published by Monotype. Biome is commercial and is **not
+  bundled**: it needs a paid Monotype licence that covers embedding the font in
+  a distributed app (an application or web licence, depending on how Alexis is
+  shipped). The copy Microsoft supplies with Office is licensed for Office use
+  only and may not be self-hosted or bundled. Until a licence is bought, page
+  titles and the greeting fall back to the UI font. Purchase:
+  https://www.myfonts.com/collections/biome-font-crossgrove-studio/
 
 ## Not done yet
 

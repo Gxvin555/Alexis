@@ -30,10 +30,17 @@ Alexis records cash movements. It is not accounting software.
 ## Design system
 
 - Alexis uses the **Lucerna house design system**. The only per-app values are
-  the accent tokens at the top of the stylesheet: amber `--brand:#D99A32`,
-  `--brand-dark:#B27E29`, `--brand-tint`, `--accent-glow`, `--on-brand:#15202b`.
-- Amber as text on light surfaces uses `--brand-text`, and focus outlines use
-  `--focus`, because plain amber on white fails contrast.
+  the accent tokens at the top of the stylesheet. Alexis keeps amber
+  (`--brand:#D99A32`) by explicit decision; the wordmark's peach dot is artwork
+  and is never recoloured.
+- Contrast: `--brand` is for non-text accents and for fills carrying near-black
+  `--on-brand` text. A fill carrying white text uses `--brand-strong`. Amber
+  text and links use `--brand-ink`, never raw `--brand`. Focus uses `--focus`.
+- Weight ceiling is 700. No 800 or 900 anywhere.
+- Counts and totals use tabular figures; counts go through `count()` for
+  thousands separators. No count-up animation.
+- Fonts are local only. `--font-brand` waits for a licensed Biome file; do not
+  add a CDN link or a lookalike face.
 - Neutrals, status colours, radii and shadows are shared across Lucerna apps.
   Do not recolour them, and never hard-code a hex in a component.
 - There is **one** stylesheet. Light tokens are on `:root`, dark tokens on
@@ -42,8 +49,13 @@ Alexis records cash movements. It is not accounting software.
 - Status amber means a warning and always comes with an icon and words. Brand
   amber means "interactive". Do not use one for the other.
 - Icons are inline line icons from `icon(name)`. No emoji or glyph icons.
-- Use the supplied wordmark files exactly. Never redraw or re-letter them. The
-  Lucerna logo appears once, at the foot of Settings.
+- Use the supplied wordmark files exactly. Never redraw or re-letter them. Logos
+  sit directly on the surface, never in a box or plaque; dark surfaces use the
+  recolour-only light copy. The Lucerna logo appears once, at the foot of
+  Settings. `assets/ASSET_MANIFEST.json` records every asset's hash.
+- Honesty: never report a success that did not happen. Downloads say the
+  download started; a mailto link opens a draft. Mavis is described as built-in
+  rules, not an AI model.
 
 ## Rules for the single file
 
