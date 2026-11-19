@@ -80,7 +80,7 @@ Alexis records cash movements. It is not accounting software.
 ## Readability
 
 - **Nothing smaller than 11px.** Labels 11.5 to 12px, body 13.5 to 14.5px.
-- Weights 500, 600, 700 and 800 only.
+- Weights 500, 600 and 700 only (the 700 ceiling above).
 - Tap targets 32px or more for small row controls.
 - The Mavis launcher is pinned bottom right, so toasts sit above it, and move
   to the top while the Mavis panel is open.

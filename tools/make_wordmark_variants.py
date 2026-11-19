@@ -51,7 +51,7 @@ def main(src):
         raise SystemExit('No coloured dot found; check the input file.')
     xs, ys = [p[0] for p in dot], [p[1] for p in dot]
     dot_box = (min(xs), min(ys), max(xs) + 1, max(ys) + 1)
-    # Representative dot colour and letter colour (most saturated / darkest opaque pixels).
+    # Representative dot colour (most common opaque dot pixel) and letter colour (darkest grey).
     from collections import Counter
     dot_rgb = Counter(pix[x, y][:3] for x, y in dot if pix[x, y][3] == 255).most_common(1)[0][0]
     greys = [pix[x, y][:3] for y in range(0, h, 2) for x in range(0, w, 2)
