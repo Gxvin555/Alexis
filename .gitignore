@@ -1,3 +1,5 @@
 node_modules/
 *.png
 !assets/img/*.png
+__pycache__/
+*.pyc
