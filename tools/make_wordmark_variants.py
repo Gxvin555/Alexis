@@ -1,12 +1,16 @@
 """Prepare Alexis brand assets from the supplied wordmark artwork.
 
 Usage (needs Pillow):
-    python3 tools/make_wordmark_variants.py "path/to/Alexis - Finance.png"
+    python3 tools/make_wordmark_variants.py path/to/alexis.png
+    python3 tools/make_wordmark_variants.py --lucerna path/to/lucerna.png
 
 Writes, in assets/img/:
     alexis-wordmark.png        the supplied file, copied unchanged (light surfaces)
     alexis-wordmark-light.png  recoloured copy for dark surfaces
     favicon.png                the supplied dot, cropped and padded to a square
+                               (a placeholder, not approved icon artwork)
+With --lucerna, copies the supplied Lucerna file unchanged to lucerna.png and
+writes lucerna-light.png with the lettering lightened to #bec4d0, alpha kept.
 
 Rules from the Lucerna brand guide: recolour only, never redraw. Geometry is
 kept pixel for pixel. Grey lettering becomes #e9edf4; the coloured dot keeps
@@ -20,6 +24,7 @@ from pathlib import Path
 from PIL import Image
 
 LETTER_TARGET = (0xE9, 0xED, 0xF4)
+LUCERNA_TARGET = (0xBE, 0xC4, 0xD0)
 OUT = Path(__file__).resolve().parent.parent / 'assets' / 'img'
 
 
@@ -89,7 +94,24 @@ def main(src):
           f'opaque background: {opaque_bg}. Wrote {OUT}.')
 
 
+def lucerna(src):
+    """Copy the Lucerna original unchanged and make a lettering-only light copy."""
+    src = Path(src)
+    im = Image.open(src).convert('RGBA')
+    alpha = im.getchannel('A')
+    light = Image.new('RGBA', im.size, (*LUCERNA_TARGET, 0))
+    light.putalpha(alpha)
+    OUT.mkdir(parents=True, exist_ok=True)
+    if src.resolve() != (OUT / 'lucerna.png').resolve():
+        shutil.copyfile(src, OUT / 'lucerna.png')
+    light.save(OUT / 'lucerna-light.png', optimize=True)
+    print(f'Lucerna {im.size[0]}x{im.size[1]}: wrote lucerna.png (unchanged) and lucerna-light.png.')
+
+
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) == 3 and sys.argv[1] == '--lucerna':
+        lucerna(sys.argv[2])
+    elif len(sys.argv) == 2:
+        main(sys.argv[1])
+    else:
         raise SystemExit(__doc__)
-    main(sys.argv[1])

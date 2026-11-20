@@ -1,11 +1,12 @@
 {
-  "note": "Brand assets for Alexis. Originals are byte-for-byte copies of the supplied artwork. Light variants are recolour-only copies made by tools/make_wordmark_variants.py: same size, same alpha, lettering remapped to a light ink, coloured dot pixels unchanged. Nothing is traced or redrawn.",
+  "note": "Brand assets for Alexis. Originals are byte-for-byte copies of the canonical supplied artwork and must match canonical_sha256. Light variants are display variants made by tools/make_wordmark_variants.py: same canvas, same alpha, neutral lettering lightened, the Alexis dot pixels unchanged. Nothing is traced, redrawn, cropped or resampled except the favicon placeholder.",
   "assets": [
     {
       "file": "assets/img/alexis-wordmark.png",
       "role": "Alexis wordmark for light surfaces",
       "kind": "original",
-      "source": "alexis.png supplied 2026-11-16",
+      "source": "Lucerna-GitHub-Review-2026-11-19 brand-originals (canonical bytes; SHA256.json in that kit), alexis.png",
+      "canonical_sha256": "86a4ec6b1f6505416b6d4dee21806a1b777201c28d64d6071bdcd28b05ea40b7",
       "sha256": "86a4ec6b1f6505416b6d4dee21806a1b777201c28d64d6071bdcd28b05ea40b7",
       "size_px": [
         1928,
@@ -16,8 +17,8 @@
     {
       "file": "assets/img/alexis-wordmark-light.png",
       "role": "Alexis wordmark for dark surfaces",
-      "kind": "recolour of alexis-wordmark.png",
-      "recolour": "lettering #595959 to #E9EDF4; dot and alpha unchanged",
+      "kind": "display variant of alexis-wordmark.png",
+      "derivation": "lettering #595959 to #E9EDF4 keeping alpha; all 1,202 opaque dot pixels and every alpha value unchanged (checked)",
       "sha256": "e0bc0ce73eb8e9f6e8d6855018e3723f42f7807f996f6dc8dd3df9d4f99f7cda",
       "size_px": [
         1928,
@@ -27,7 +28,7 @@
     {
       "file": "assets/img/favicon.png",
       "role": "favicon",
-      "kind": "crop of the dot from alexis-wordmark.png, padded and scaled to 64px",
+      "kind": "PLACEHOLDER: the dot cropped from alexis-wordmark.png, padded and resampled to 64px. Not approved icon artwork; replace when an approved icon is supplied.",
       "sha256": "303cd6db4fcc726bd56d972547cb8f8dc418b3c35371ddb0fd2c2784d03fee0d",
       "size_px": [
         64,
@@ -38,22 +39,24 @@
       "file": "assets/img/lucerna.png",
       "role": "Lucerna sub-brand for light surfaces",
       "kind": "original",
-      "source": "pixel-identical to lucerna artwork supplied 2026-11-16 (received as lossless WebP); PNG bytes taken from the aperture reference build",
-      "sha256": "7a026783dbbe2b6ee714c7aef5d7e0c0c687516f23a29bb215ff70cc991d5410",
+      "source": "Lucerna-GitHub-Review-2026-11-19 brand-originals (canonical bytes; SHA256.json in that kit), lucerna.png",
+      "canonical_sha256": "a0c2e415a79f7d78cad114532119a7f7d72b8e9e51f3ba00f4cffb291d2e216a",
+      "sha256": "a0c2e415a79f7d78cad114532119a7f7d72b8e9e51f3ba00f4cffb291d2e216a",
       "size_px": [
-        2000,
-        673
-      ]
+        2750,
+        925
+      ],
+      "history": "Replaced on 2026-11-20. The earlier file was a resampled 2000x673 copy taken from the aperture demo."
     },
     {
       "file": "assets/img/lucerna-light.png",
       "role": "Lucerna sub-brand for dark surfaces",
-      "kind": "recolour of lucerna.png",
-      "recolour": "lettering #000000 to #BEC4D0; alpha unchanged",
-      "sha256": "0ab49528075dd36fcf2aa5cbbe5f51398fb1e01f5f44f24338f8f2bcd49f33ae",
+      "kind": "display variant of lucerna.png",
+      "derivation": "lettering #000000 to #BEC4D0 keeping alpha; alpha identical (checked)",
+      "sha256": "d322898823b38f4732c159e2eea743480a34c2c6e82c4aaec968131aca3e4b99",
       "size_px": [
-        2000,
-        673
+        2750,
+        925
       ]
     }
   ]

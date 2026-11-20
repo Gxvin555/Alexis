@@ -1,0 +1,12 @@
+{
+  "name": "alexis",
+  "private": true,
+  "description": "Regression tests for Alexis. The app itself needs no build or install.",
+  "scripts": {
+    "test": "node --test tests/alexis.test.js",
+    "package": "python3 tools/package.py"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

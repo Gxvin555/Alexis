@@ -1,18 +1,33 @@
 # Alexis
 
-Alexis is Lucerna's private, offline business finance app for one device. It
+Alexis is Lucerna's offline business finance app for one device. It
 records business income and expenditure, budgets, recurring bills, money the
 business has lent or borrowed, and business documents. Everything is stored in
 this browser and never leaves the machine. Mavis, the built-in assistant,
 answers set questions from those records using built-in rules. It is not an AI
 model and connects to no service.
 
-It is a single HTML file with no backend and no build step.
+It is one HTML file plus an `assets` folder of brand images, with no backend
+and no build step. Fonts are embedded in the HTML. There is no standalone
+single-file export: the package is the folder.
+
+"Private" describes the records, which stay in the browser on the device. It
+says nothing about this source repository, whose visibility is a separate
+decision. Never commit real records, backups or recovery files.
 
 ## Running it
 
 Keep `alexis.html` and the `assets` folder together, then open `alexis.html` in
 a modern browser. Create a four-digit PIN and complete the short setup.
+
+To build the distributable folder and zip, with every asset checked against
+`assets/ASSET_MANIFEST.json`:
+
+```
+python3 tools/package.py
+```
+
+This writes `dist/alexis/` and `dist/alexis.zip` (ignored by git).
 
 Any static file server also works:
 
@@ -76,6 +91,38 @@ folder, as before finds the existing records, PIN and preferences.
 The PIN is stored as a salted PBKDF2 hash. It locks the screen; it does not
 encrypt the records.
 
+### When storage fails
+
+- **A save fails** (storage full or blocked): the change is not kept, the
+  records on screen roll back to the last saved copy, any open dialog stays
+  open with its entries so you can try again, and a warning explains what
+  happened. Nothing reports "saved" unless storage accepted it.
+- **Restore fails**: your current records stay as they were.
+- **Documents**: a document only counts as stored or removed once the browser
+  has committed the change.
+- **Unreadable records or PIN**: Alexis does not treat them as a first run and
+  never overwrites them on its own. A recovery screen offers a download of the
+  raw text, then a restore from backup, empty records, or a new PIN. Before
+  anything is replaced, a copy of the unreadable text is kept in the browser
+  under a key ending `-unreadable-<time>`.
+- **Storage blocked, or browser cryptography missing**: Alexis explains the
+  problem and changes nothing.
+
+## Tests
+
+Regression tests drive the real app in Chromium with synthetic records:
+
+```
+npm install
+npx playwright install chromium
+npm test
+```
+
+They cover failed saves, restore, backup round trips, integer pennies, lending
+and borrowing links, CSV edge cases, document transactions, recovery screens,
+locking, and the packaged folder over file:// and HTTP. See `HANDOVER.md` for
+the latest results.
+
 ## Design system
 
 Alexis uses the Lucerna house design system shared with aperture, aether and
@@ -97,11 +144,13 @@ a change to the accent block only.
 source, role and SHA-256 of each file.
 
 - `alexis-wordmark.png`: the supplied `alexis.png`, byte-for-byte.
-- `alexis-wordmark-light.png`: recolour-only copy for dark surfaces. Lettering
+- `alexis-wordmark-light.png`: display variant for dark surfaces. Lettering
   `#595959` becomes `#e9edf4`; the dot pixels and alpha are unchanged.
-- `favicon.png`: the dot, cropped from the original.
-- `lucerna.png`, `lucerna-light.png`: the Lucerna sub-brand and its
-  recolour-only light copy, shown once at the foot of Settings.
+- `favicon.png`: a placeholder cropped from the dot. It is not approved icon
+  artwork and should be replaced when an approved icon exists.
+- `lucerna.png`: the canonical Lucerna original, byte-for-byte.
+  `lucerna-light.png` is its display variant (lettering `#bec4d0`, alpha
+  unchanged). Shown once at the foot of Settings.
 
 Logos always sit directly on the surface, never inside a box or plaque. Dark
 surfaces use the light-ink copy. To regenerate the light copy and favicon from
@@ -109,6 +158,7 @@ new artwork:
 
 ```
 python3 tools/make_wordmark_variants.py path/to/alexis.png
+python3 tools/make_wordmark_variants.py --lucerna path/to/lucerna.png
 ```
 
 ## Fonts

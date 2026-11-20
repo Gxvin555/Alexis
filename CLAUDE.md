@@ -5,10 +5,14 @@ before you touch anything.
 
 ## What this project is
 
-Alexis is Lucerna's private, offline business finance app. It is a single
-self-contained HTML file, `alexis.html`, that runs offline and saves to the
-browser's local storage. The `assets` folder must sit next to it; the HTML
-references the brand images by relative path. Fonts are embedded in the file.
+Alexis is Lucerna's offline business finance app. It ships as `alexis.html`
+plus the `assets` folder: the HTML references the brand images by relative
+path, and fonts are embedded in the HTML. `tools/package.py` builds the
+distributable folder and zip and checks every asset hash. Records stay private
+in the browser on one device; the repository's visibility is a separate matter,
+so never commit real records, backups or recovery files.
+
+Read `HANDOVER.md` for the current state, test results and open issues.
 
 `amethyst-money.html` is only a redirect for old bookmarks. Do not build on it.
 
@@ -51,8 +55,11 @@ Alexis records cash movements. It is not accounting software.
 - Icons are inline line icons from `icon(name)`. No emoji or glyph icons.
 - Use the supplied wordmark files exactly. Never redraw or re-letter them. Logos
   sit directly on the surface, never in a box or plaque; dark surfaces use the
-  recolour-only light copy. The Lucerna logo appears once, at the foot of
-  Settings. `assets/ASSET_MANIFEST.json` records every asset's hash.
+  display variant made by `tools/make_wordmark_variants.py` (lettering only;
+  geometry, alpha and the dot unchanged). Originals must match the canonical
+  SHA-256 in `assets/ASSET_MANIFEST.json`; never update a baseline hash to pass.
+  The Lucerna logo appears once, at the foot of Settings. The favicon is a
+  placeholder, not approved icon artwork.
 - Honesty: never report a success that did not happen. Downloads say the
   download started; a mailto link opens a draft. Mavis is described as built-in
   rules, not an AI model.
@@ -62,10 +69,25 @@ Alexis records cash movements. It is not accounting software.
 - **One writer at a time.** Make one focused change, test it, commit it.
 - **Storage must never throw.** All writes go through `storageSet` and
   `storageRemove`. Never call `localStorage.setItem` directly.
+- **Never claim success after a failed save.** `save()` returns false when
+  storage refuses, and rolls the in-memory records back to the last saved copy
+  (`durable`). Every caller must stop on false: no success toast, no closing
+  the dialog. Use `if(!save())return;`.
+- **Restore is write-first.** `restore()` and the recovery screen write the new
+  vault and switch `state` only after `storageSet` succeeds.
+- **Documents settle on commit.** `docRequest` resolves on
+  `transaction.oncomplete` and rejects on abort or error. Never report a
+  document as stored or removed before that.
+- **Unreadable is not empty.** `load()` sets `vaultStatus` to absent, ok,
+  corrupt or blocked; `readPin()` does the same for the PIN. Corrupt or blocked
+  data goes to `showRecovery()` and is never overwritten without an explicit
+  choice; a copy is kept under `<key>-unreadable-<time>` first.
 - **Trust nothing that comes out of storage.** `load` rebuilds every array
   through `sanitiseVault`.
 - **Migrate data, never reset it.** Storage keys (`amethyst-money-*`) and the
   IndexedDB name are kept for compatibility. Do not rename them.
+- **Run the tests** (`npm test`) after any change to storage, restore, import,
+  documents, lending or locking. Add a test for each new failure path.
 - **Categories:** new entries use the business list in `cats`. Legacy personal
   categories in `legacyCats` stay valid on existing records and imports;
   `catOptions` keeps a record's own category when it is edited.
@@ -94,8 +116,8 @@ navigates, closes and returns focus at phone width after any sidebar change.
 
 ## Locking
 
-`lock()` clears every overlay (`#modalRoot`, `#onboardingRoot`, the Mavis panel
-and the mobile menu), and the assistant is gated on `unlocked`. Auto-lock runs
+`lock()` clears every overlay (`#modalRoot`, `#onboardingRoot`, `#recovery`, the
+Mavis panel and the mobile menu), and the assistant is gated on `unlocked`. Auto-lock runs
 on idle. Any new panel outside `#app` must be cleared in `lock()` too.
 
 ## Dates
